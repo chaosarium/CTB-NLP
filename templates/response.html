@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Working Title</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl" crossorigin="anonymous">
+</head>
+<body>
+  <nav class="navbar navbar-dark bg-dark">
+    <div class="container-fluid px-lg-5">
+      <a class="navbar-brand" href="/">Working Title</a>
+    </div>
+  </nav>
+  <div class="container-fluid py-4 px-lg-5">
+    <!-- Code starts here (｡･ω･｡)ﾉ -->
+
+    <p>Query: {{ searchResult.query_input }}</p>
+    <p>Plain results: {{ searchResult }}</p>
+    <p>Session ID: {{ searchResult.search_session_id }}</p>
+
+    <!-- This is the table where results are displayed -->  
+    <table class="table">
+      <thead>
+        <tr>
+          <th scope="col">rank</th>
+          <th scope="col">qid</th>
+          <th scope="col">pid</th>
+          <th scope="col">query label</th>
+          <th scope="col">passage</th>
+          <th scope="col">score</th>
+          <th scope="col">upvote</th>
+          <th scope="col">downvote</th>
+          <th scope="col">expand</th>
+        </tr>
+      </thead>
+      <tbody>
+
+        {% for row in searchResult.table %}
+
+        <tr>
+          <td>{{ row["rank"] }}</td>
+          <td>{{ row["qid"] }}</td>
+          <td>{{ row["pid"] }}</td>
+          <td>{{ row["query_label"] }}</td>
+          <td>{{ row["passage"] }}</td>
+          <td>{{ row["score"] }}</td>
+          <td>
+            <button  data-sessionID="{{ searchResult.search_session_id }}" data-rank="{{ row['rank'] }}" data-pid="{{ row['pid'] }}" onclick="logAction(this.getAttribute('data-sessionID'), 'upvote', this.getAttribute('data-pid'), this.getAttribute('data-rank'));">
+              upvote
+            </button>
+          </td>
+          <td>
+            <button  data-sessionID="{{ searchResult.search_session_id }}" data-rank="{{ row['rank'] }}" data-pid="{{ row['pid'] }}" onclick="logAction(this.getAttribute('data-sessionID'), 'expand', this.getAttribute('data-pid'), this.getAttribute('data-rank'));">
+              expand
+            </button>
+          </td>
+          <td>
+            <button  data-sessionID="{{ searchResult.search_session_id }}" data-rank="{{ row['rank'] }}" data-pid="{{ row['pid'] }}" onclick="logAction(this.getAttribute('data-sessionID'), 'downvote', this.getAttribute('data-pid'), this.getAttribute('data-rank'));">
+              downvote
+            </button>
+          </td>
+        </tr>
+
+        {% endfor %}
+
+      </tbody>
+    </table>
+    
+
+
+
+
+  </div>
+
+  <script src="js/main.js"></script>
+</body>
+</html>
