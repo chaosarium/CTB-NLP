@@ -75,7 +75,7 @@ def handel_log_req():
     actionType = json.loads(request.data)["actionType"]
     pid = json.loads(request.data)["pid"]
     rank = json.loads(request.data)["rank"]
-    print(f"█📥█ Logging Action: for session: {sessionID}, do: {actionType}, to pid {pid} rank: {rank}")
+    print(f"█ Logging Action: for session: {sessionID}, do: {actionType}, to pid {pid} rank: {rank}")
     update_user_log(sessionID, actionType, pid, rank)
     return "you shouldn't see this message"
     
