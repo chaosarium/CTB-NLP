@@ -4,8 +4,11 @@ from flask import render_template
 from flask import request
 import json
 from es_helper import *
-
 from log_file_helper import get_new_session_id, update_search_log, update_user_log
+
+INDEX = "efaqa-70" # index to search e.g. "msmacro-full"
+FIELDS = ["passage"] # fields to search e.g. ["passage", "query"]
+PORT = 6002
 
 app = Flask(__name__, static_url_path="")
 
@@ -61,7 +64,7 @@ def handel_search_req():
         scores = [0.231, 0.123, 0.095]
     )
 
-    result_count, es_hits = es_search(query_input, cutoff = 100, index="msmacro-full", fields = ["passage", "query"])
+    result_count, es_hits = es_search(query_input, cutoff = 100, index=INDEX, fields = FIELDS)
     es_results = direct_es_search_result(search_session_id, query_input, es_hits)
 
     update_search_log(dummy_result)
@@ -82,4 +85,4 @@ def handel_log_req():
 
 # run the ting
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=6001)
+    app.run(host='0.0.0.0', port=6002)
