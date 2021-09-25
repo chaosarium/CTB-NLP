@@ -4,6 +4,7 @@ from flask import render_template
 from flask import request
 import json
 from es_helper import *
+from rerank_helper import rerank
 from log_file_helper import get_new_session_id, update_search_log, update_user_log
 
 INDEX = "efaqa-70" # index to search e.g. "msmacro-full"
@@ -64,10 +65,13 @@ def handel_search_req():
         scores = [0.231, 0.123, 0.095]
     )
 
-    result_count, es_hits = es_search(query_input, cutoff = 100, index=INDEX, fields = FIELDS)
+    result_count, es_hits = es_search(query_input, cutoff = 10, index=INDEX, fields = FIELDS)
     es_results = direct_es_search_result(search_session_id, query_input, es_hits)
 
-    update_search_log(dummy_result)
+    print('**reranking**')
+    es_results = rerank(es_results)
+
+    update_search_log(es_results)
  
     return render_template('response.html', searchResult = es_results)
 
