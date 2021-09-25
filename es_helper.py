@@ -28,7 +28,7 @@ def direct_es_search_result(search_session_id, query_input, hits):
     ranks, qids, pids, query_labels, passages, scores = [], [], [], [], [], []
 
     for index, hit in enumerate(hits):
-        ranks.append(index + 1)
+        ranks.append(index)
         qids.append(hit['_source']['qid'])
         pids.append(hit['_source']['pid'])
         query_labels.append(hit['_source']['query'])
