@@ -1,7 +1,8 @@
 from flask import Flask
 from markupsafe import escape
 from flask import render_template
-from flask import request
+from flask import request, jsonify
+import numpy
 import json
 import time
 from es_helper import *
@@ -24,6 +25,7 @@ def return_index():
 @app.route('/search-req', methods=['POST'])
 def handel_search_req():
     query_input = request.form["queryInputBox"]
+    request_type = request.form["reqType"]
     search_session_id = get_new_session_id()
 
     # do some retrieval and ranking here
@@ -44,15 +46,32 @@ def handel_search_req():
     result_count, es_hits = es_search(query_input, cutoff = ES_CUTOFF, index=INDEX, fields = FIELDS)
     es_results = direct_es_search_result(search_session_id, query_input, es_hits)
 
-    print('**reranking**')
+    print('> > > reranking...')
     tic = time.time()
     model_results = rerank(es_results)
     toc = time.time()
-    print(f'**that took {toc - tic} seconds**')
+    print(f'> > > that took {toc - tic} seconds')
 
     update_search_log(model_results)
  
-    return render_template('response.html', searchResult = model_results)
+    if request_type == "page":
+        return render_template('response.html', searchResult = model_results)
+    elif request_type == "json":
+        result_dic = {
+                'search_session_id': model_results.search_session_id,
+                'query_input': model_results.query_input, 
+                'table': model_results.table
+            }
+        
+        # the numpy.int64 data type doesn't work with json so we need to fix this by copying code from somewhere
+        def convert(o):
+            if isinstance(o, numpy.int64): return int(o)  
+            raise TypeError
+        jsong_response = json.dumps(result_dic, default=convert)
+
+        return jsong_response
+    else:
+        return "err what are you doing this really shouldn't be returned"
 
 # logging user activity
 @app.route('/log-req', methods=['POST'])
@@ -61,7 +80,7 @@ def handel_log_req():
     actionType = json.loads(request.data)["actionType"]
     pid = json.loads(request.data)["pid"]
     rank = json.loads(request.data)["rank"]
-    print(f"█ Logging Action: for session: {sessionID}, do: {actionType}, to pid {pid} rank: {rank}")
+    print(f"> > > Logging Action: for session: {sessionID}, do: {actionType}, to pid {pid} rank: {rank}")
     update_user_log(sessionID, actionType, pid, rank)
 
     return "you shouldn't see this message"
