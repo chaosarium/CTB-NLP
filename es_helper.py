@@ -25,10 +25,14 @@ def direct_es_search_result(search_session_id, query_input, hits):
     '''
     this parses the search result and returns the search results object
     '''
-    ranks, pids, passages, citations, scores = [], [], [], [], []
+    ranks, qids, q_labels, alt_qids, alt_q_labels, pids, passages, citations, scores = [], [], [], [], [], [], [], [], []
 
     for index, hit in enumerate(hits):
         ranks.append(index)
+        qids.append(hit['_source']['qid'])
+        q_labels.append(hit['_source']['query'])
+        alt_qids.append(hit['_source']['alt_qid'])
+        alt_q_labels.append(hit['_source']['alt_query'])
         pids.append(hit['_source']['pid'])
         passages.append(hit['_source']['passage'])
         citations.append(hit['_source']['citation'])
@@ -39,6 +43,10 @@ def direct_es_search_result(search_session_id, query_input, hits):
         query_input = query_input,
         ranks = ranks, 
         pids = pids, 
+        qids = qids, 
+        q_labels = q_labels, 
+        alt_qids = alt_qids, 
+        alt_q_labels = alt_q_labels, 
         passages = passages, 
         citations = citations, 
         scores = scores

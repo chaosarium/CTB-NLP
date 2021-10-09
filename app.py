@@ -21,7 +21,7 @@ def return_index():
 
 # this is the class for the thing returned to the front end
 class search_results_data:
-    def __init__(self, search_session_id, query_input, ranks, pids, passages, citations, scores):
+    def __init__(self, search_session_id, query_input, ranks, qids, q_labels, alt_qids, alt_q_labels, pids, passages, citations, scores):
         """
         these are metas of a search result:
             search_session_id - intiger, unique for each search session
@@ -29,17 +29,25 @@ class search_results_data:
 
         all of the below should be of the same length and in order, they will be stored in self.table:
             ranks - list of ranks
+            qids - list of ranks
+            q_labels - list of ranks
+            alt_qids - list of ranks
+            alt_q_labels - list of ranks
             pids - list of pids
             passages - list of passages
             citations - list of citations
             scores - list of scores from search matching
             citations - list of citations from search matching
         """
-        assert len(ranks)==len(pids)==len(citations)==len(passages)==len(scores)
+        assert len(ranks)==len(qids)==len(q_labels)==len(alt_qids)==len(alt_q_labels)==len(pids)==len(citations)==len(passages)==len(scores)
         table = []
         for i, rank in enumerate(ranks):
             table.append({
                 "rank": ranks[i],
+                "qid": qids[i],
+                "q_label": q_labels[i],
+                "alt_qid": alt_qids[i],
+                "alt_q_label": alt_q_labels[i],
                 "pid": pids[i],
                 "passage": passages[i],
                 "citation": citations[i],
@@ -60,6 +68,10 @@ def handel_search_req():
         search_session_id = search_session_id,
         query_input = query_input,
         ranks = [1,2,3], 
+        qids = ["qid 1", "qid 2", "qid 3"],
+        q_labels = ["q_label 1", "q_label 2", "q_label 3"],
+        alt_qids = ["alt_qid 1", "alt_qid 2", "alt_qid 3"],
+        alt_q_labels = ["alt_q_label 1", "alt_q_label 2", "alt_q_label 3"],
         pids = [15324, 124, 642], 
         passages = ["名侦探柯南 国语版-动漫动画-全集高清正版视频在线观看-爱奇艺", "名侦探柯南国语版全集(国语) 名侦探柯南国语版动漫全集 在线观看 - 哈哈动漫网", "名侦探柯南(国语)-名侦探柯南(国语)全集(1-837共1000集)-动画片 - 搜狐视频"], 
         citations = ["citation 1", "citation 2", "citation 3"], 
