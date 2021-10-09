@@ -88,4 +88,4 @@ def handel_log_req():
 
 # run the thing
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=6002)
+    app.run(host='0.0.0.0', port=PORT)
