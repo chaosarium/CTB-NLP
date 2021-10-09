@@ -10,9 +10,7 @@ else:
     DEVICE = torch.device("cpu")
     print("Running on the CPU")
 
-# sentence_transformer_model = SentenceTransformer('distiluse-base-multilingual-cased-v1', device=DEVICE)
-# later use this bigger model for higher performance 'paraphrase-multilingual-mpnet-base-v2'
-sentence_transformer_model_v2 = SentenceTransformer('paraphrase-multilingual-mpnet-base-v2', device=DEVICE)
+model = SentenceTransformer('models/multilingual-mpnet-ctb-finetuned', device=DEVICE)
 
 def rerank(es_results):
     '''
@@ -20,8 +18,8 @@ def rerank(es_results):
     '''
     passages = [hit['passage'] for hit in es_results.table]
     queries = [es_results.query_input]
-    query_embeddings = sentence_transformer_model_v2.encode(queries, convert_to_tensor=True)
-    sentence_embeddings = sentence_transformer_model_v2.encode(passages, convert_to_tensor=True)
+    query_embeddings = model.encode(queries, convert_to_tensor=True)
+    sentence_embeddings = model.encode(passages, convert_to_tensor=True)
 
     sentence_embeddings = sentence_embeddings.to(DEVICE)
     sentence_embeddings = util.normalize_embeddings(sentence_embeddings)

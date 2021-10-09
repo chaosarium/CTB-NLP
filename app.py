@@ -7,8 +7,9 @@ from es_helper import *
 from rerank_helper import rerank
 from log_file_helper import get_new_session_id, update_search_log, update_user_log
 
-INDEX = "efaqa-70" # index to search e.g. "msmacro-full"
-FIELDS = ["passage"] # fields to search e.g. ["passage", "query"]
+INDEX = "ctb-nlp-v1" # index to search e.g. "msmacro-full"
+FIELDS = ["passage", "query", "alt_query"] # fields to search in elasticsearch retrieval e.g. ["passage", "query"]
+ES_CUTOFF = 10 # number of entries retrieved by elasticsearch
 PORT = 6002
 
 app = Flask(__name__, static_url_path="")
@@ -65,7 +66,7 @@ def handel_search_req():
         scores = [0.231, 0.123, 0.095]
     )
 
-    result_count, es_hits = es_search(query_input, cutoff = 10, index=INDEX, fields = FIELDS)
+    result_count, es_hits = es_search(query_input, cutoff = ES_CUTOFF, index=INDEX, fields = FIELDS)
     es_results = direct_es_search_result(search_session_id, query_input, es_hits)
 
     print('**reranking**')
