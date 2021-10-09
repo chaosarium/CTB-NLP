@@ -35,7 +35,7 @@ class search_results_data:
             scores - list of scores from search matching
             citations - list of citations from search matching
         """
-        assert len(ranks)==len(pids)==len(passages)==len(scores)
+        assert len(ranks)==len(pids)==len(citations)==len(passages)==len(scores)
         table = []
         for i, rank in enumerate(ranks):
             table.append({
@@ -66,15 +66,15 @@ def handel_search_req():
         scores = [0.231, 0.123, 0.095]
     )
 
-    # result_count, es_hits = es_search(query_input, cutoff = ES_CUTOFF, index=INDEX, fields = FIELDS)
-    # es_results = direct_es_search_result(search_session_id, query_input, es_hits)
+    result_count, es_hits = es_search(query_input, cutoff = ES_CUTOFF, index=INDEX, fields = FIELDS)
+    es_results = direct_es_search_result(search_session_id, query_input, es_hits)
 
-    # print('**reranking**')
-    # es_results = rerank(es_results)
+    print('**reranking**')
+    model_results = rerank(es_results)
 
-    # update_search_log(es_results)
+    update_search_log(model_results)
  
-    return render_template('response.html', searchResult = dummy_result)
+    return render_template('response.html', searchResult = model_results)
 
 # logging user activity
 @app.route('/log-req', methods=['POST'])
@@ -85,6 +85,7 @@ def handel_log_req():
     rank = json.loads(request.data)["rank"]
     print(f"█ Logging Action: for session: {sessionID}, do: {actionType}, to pid {pid} rank: {rank}")
     update_user_log(sessionID, actionType, pid, rank)
+
     return "you shouldn't see this message"
     
 

@@ -8,7 +8,7 @@ from pprint import pprint
 # this is the search result object
 from app import search_results_data
 
-def es_search(query, cutoff = 1000, index="msmacro-full", fields = ["passage", "query"]):
+def es_search(query, cutoff = 1000, index="ctb-nlp-v1", fields = ["passage", "query"]):
     q = Q({"multi_match": {"query": query, "fields": fields}})
 
     s = Search(using=es_client, index=index).query(q)
@@ -25,24 +25,22 @@ def direct_es_search_result(search_session_id, query_input, hits):
     '''
     this parses the search result and returns the search results object
     '''
-    ranks, qids, pids, query_labels, passages, scores = [], [], [], [], [], []
+    ranks, pids, passages, citations, scores = [], [], [], [], []
 
     for index, hit in enumerate(hits):
         ranks.append(index)
-        qids.append(hit['_source']['qid'])
         pids.append(hit['_source']['pid'])
-        query_labels.append(hit['_source']['query'])
         passages.append(hit['_source']['passage'])
+        citations.append(hit['_source']['citation'])
         scores.append(hit['_score'])
     
     result = search_results_data(
         search_session_id = search_session_id,
         query_input = query_input,
         ranks = ranks, 
-        qids = qids, 
         pids = pids, 
-        query_labels = query_labels, 
         passages = passages, 
+        citations = citations, 
         scores = scores
     )
 
