@@ -5,8 +5,43 @@ from elasticsearch_dsl import Q
 es_client = Elasticsearch()
 from pprint import pprint
 
-# this is the search result object
-from app import search_results_data
+# this is the class for the thing returned to the front end
+class search_results_data:
+    def __init__(self, search_session_id, query_input, ranks, qids, q_labels, alt_qids, alt_q_labels, pids, passages, citations, scores):
+        """
+        these are metas of a search result:
+            search_session_id - intiger, unique for each search session
+            query_input - string, the query
+
+        all of the below should be of the same length and in order, they will be stored in self.table:
+            ranks - list of ranks
+            qids - list of ranks
+            q_labels - list of ranks
+            alt_qids - list of ranks
+            alt_q_labels - list of ranks
+            pids - list of pids
+            passages - list of passages
+            citations - list of citations
+            scores - list of scores from search matching
+            citations - list of citations from search matching
+        """
+        assert len(ranks)==len(qids)==len(q_labels)==len(alt_qids)==len(alt_q_labels)==len(pids)==len(citations)==len(passages)==len(scores)
+        table = []
+        for i, rank in enumerate(ranks):
+            table.append({
+                "rank": ranks[i],
+                "qid": qids[i],
+                "q_label": q_labels[i],
+                "alt_qid": alt_qids[i],
+                "alt_q_label": alt_q_labels[i],
+                "pid": pids[i],
+                "passage": passages[i],
+                "citation": citations[i],
+                "score": scores[i],
+            })
+        self.search_session_id = search_session_id
+        self.query_input = query_input
+        self.table = table
 
 def es_search(query, cutoff = 1000, index="ctb-nlp-v1", fields = ["passage", "query"]):
     q = Q({"multi_match": {"query": query, "fields": fields}})

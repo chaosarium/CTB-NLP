@@ -3,13 +3,14 @@ from markupsafe import escape
 from flask import render_template
 from flask import request
 import json
+import time
 from es_helper import *
 from rerank_helper import rerank
 from log_file_helper import get_new_session_id, update_search_log, update_user_log
 
 INDEX = "ctb-nlp-v1" # index to search e.g. "msmacro-full"
 FIELDS = ["passage", "query", "alt_query"] # fields to search in elasticsearch retrieval e.g. ["passage", "query"]
-ES_CUTOFF = 10 # number of entries retrieved by elasticsearch
+ES_CUTOFF = 10 # number of entries retrieved by elasticsearch for reranking
 PORT = 6002
 
 app = Flask(__name__, static_url_path="")
@@ -18,44 +19,6 @@ app = Flask(__name__, static_url_path="")
 @app.route("/")
 def return_index():
     return render_template('index.html')
-
-# this is the class for the thing returned to the front end
-class search_results_data:
-    def __init__(self, search_session_id, query_input, ranks, qids, q_labels, alt_qids, alt_q_labels, pids, passages, citations, scores):
-        """
-        these are metas of a search result:
-            search_session_id - intiger, unique for each search session
-            query_input - string, the query
-
-        all of the below should be of the same length and in order, they will be stored in self.table:
-            ranks - list of ranks
-            qids - list of ranks
-            q_labels - list of ranks
-            alt_qids - list of ranks
-            alt_q_labels - list of ranks
-            pids - list of pids
-            passages - list of passages
-            citations - list of citations
-            scores - list of scores from search matching
-            citations - list of citations from search matching
-        """
-        assert len(ranks)==len(qids)==len(q_labels)==len(alt_qids)==len(alt_q_labels)==len(pids)==len(citations)==len(passages)==len(scores)
-        table = []
-        for i, rank in enumerate(ranks):
-            table.append({
-                "rank": ranks[i],
-                "qid": qids[i],
-                "q_label": q_labels[i],
-                "alt_qid": alt_qids[i],
-                "alt_q_label": alt_q_labels[i],
-                "pid": pids[i],
-                "passage": passages[i],
-                "citation": citations[i],
-                "score": scores[i],
-            })
-        self.search_session_id = search_session_id
-        self.query_input = query_input
-        self.table = table
 
 # get query post printed
 @app.route('/search-req', methods=['POST'])
@@ -82,7 +45,10 @@ def handel_search_req():
     es_results = direct_es_search_result(search_session_id, query_input, es_hits)
 
     print('**reranking**')
+    tic = time.time()
     model_results = rerank(es_results)
+    toc = time.time()
+    print(f'**that took {toc - tic} seconds**')
 
     update_search_log(model_results)
  
@@ -101,6 +67,6 @@ def handel_log_req():
     return "you shouldn't see this message"
     
 
-# run the ting
+# run the thing
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=6002)
