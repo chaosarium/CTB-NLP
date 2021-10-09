@@ -24,14 +24,13 @@
       <thead>
         <tr>
           <th scope="col">rank</th>
-          <th scope="col">qid</th>
           <th scope="col">pid</th>
-          <th scope="col">query label</th>
           <th scope="col">passage</th>
+          <th scope="col">citation</th>
           <th scope="col">score</th>
           <th scope="col">upvote</th>
-          <th scope="col">downvote</th>
           <th scope="col">expand</th>
+          <th scope="col">downvote</th>
         </tr>
       </thead>
       <tbody>
@@ -40,10 +39,9 @@
 
         <tr>
           <td>{{ row["rank"] }}</td>
-          <td>{{ row["qid"] }}</td>
           <td>{{ row["pid"] }}</td>
-          <td>{{ row["query_label"] }}</td>
           <td>{{ row["passage"] }}</td>
+          <td>{{ row["citation"] }}</td>
           <td>{{ row["score"] }}</td>
           <td>
             <button  data-sessionID="{{ searchResult.search_session_id }}" data-rank="{{ row['rank'] }}" data-pid="{{ row['pid'] }}" onclick="logAction(this.getAttribute('data-sessionID'), 'upvote', this.getAttribute('data-pid'), this.getAttribute('data-rank'));">

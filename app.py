@@ -21,27 +21,28 @@ def return_index():
 
 # this is the class for the thing returned to the front end
 class search_results_data:
-    def __init__(self, search_session_id, query_input, ranks, qids, pids, query_labels, passages, scores):
+    def __init__(self, search_session_id, query_input, ranks, pids, passages, citations, scores):
         """
-        search_session_id - intiger, unique for each search session
-        query_input - string, the query
-        all of the below should be of the same length and in order
-        ranks - list of ranks
-        qids - list of qids
-        pids - list of pids
-        query_labels - list of label queries
-        passages - list of passages
-        scores - list of scores from search matching
+        these are metas of a search result:
+            search_session_id - intiger, unique for each search session
+            query_input - string, the query
+
+        all of the below should be of the same length and in order, they will be stored in self.table:
+            ranks - list of ranks
+            pids - list of pids
+            passages - list of passages
+            citations - list of citations
+            scores - list of scores from search matching
+            citations - list of citations from search matching
         """
-        assert len(ranks)==len(qids)==len(pids)==len(query_labels)==len(passages)==len(scores)
+        assert len(ranks)==len(pids)==len(passages)==len(scores)
         table = []
         for i, rank in enumerate(ranks):
             table.append({
                 "rank": ranks[i],
-                "qid": qids[i],
                 "pid": pids[i],
-                "query_label": query_labels[i],
                 "passage": passages[i],
+                "citation": citations[i],
                 "score": scores[i],
             })
         self.search_session_id = search_session_id
@@ -59,22 +60,21 @@ def handel_search_req():
         search_session_id = search_session_id,
         query_input = query_input,
         ranks = [1,2,3], 
-        qids = [123, 324, 348], 
         pids = [15324, 124, 642], 
-        query_labels = ["柯南国语版全集", "柯南", "违章查询"], 
         passages = ["名侦探柯南 国语版-动漫动画-全集高清正版视频在线观看-爱奇艺", "名侦探柯南国语版全集(国语) 名侦探柯南国语版动漫全集 在线观看 - 哈哈动漫网", "名侦探柯南(国语)-名侦探柯南(国语)全集(1-837共1000集)-动画片 - 搜狐视频"], 
+        citations = ["citation 1", "citation 2", "citation 3"], 
         scores = [0.231, 0.123, 0.095]
     )
 
-    result_count, es_hits = es_search(query_input, cutoff = ES_CUTOFF, index=INDEX, fields = FIELDS)
-    es_results = direct_es_search_result(search_session_id, query_input, es_hits)
+    # result_count, es_hits = es_search(query_input, cutoff = ES_CUTOFF, index=INDEX, fields = FIELDS)
+    # es_results = direct_es_search_result(search_session_id, query_input, es_hits)
 
-    print('**reranking**')
-    es_results = rerank(es_results)
+    # print('**reranking**')
+    # es_results = rerank(es_results)
 
-    update_search_log(es_results)
+    # update_search_log(es_results)
  
-    return render_template('response.html', searchResult = es_results)
+    return render_template('response.html', searchResult = dummy_result)
 
 # logging user activity
 @app.route('/log-req', methods=['POST'])
