@@ -19,7 +19,7 @@ def get_new_session_id():
 def update_search_log(result_object):
     global SEARCH_LOG_FILE
     for item in result_object.table:
-        SEARCH_LOG_FILE = SEARCH_LOG_FILE.append({"search_session_id": result_object.search_session_id, "query": result_object.query_input, "rank": item["rank"], "qid": item["pid"], "pid": item["pid"], "score": item["score"]} , ignore_index=True)
+        SEARCH_LOG_FILE = SEARCH_LOG_FILE.append({"search_session_id": result_object.search_session_id, "query": result_object.query_input, "rank": item["rank"], "pid": item["pid"], "score": item["score"]} , ignore_index=True)
     write_search_log()
 
 def update_user_log(sessionID, actionType, pid, rank):
