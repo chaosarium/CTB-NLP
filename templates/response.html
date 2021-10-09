@@ -24,6 +24,10 @@
       <thead>
         <tr>
           <th scope="col">rank</th>
+          <th scope="col">qid</th>
+          <th scope="col">q_label</th>
+          <th scope="col">alt_qid</th>
+          <th scope="col">alt_q_label</th>
           <th scope="col">pid</th>
           <th scope="col">passage</th>
           <th scope="col">citation</th>
@@ -39,6 +43,10 @@
 
         <tr>
           <td>{{ row["rank"] }}</td>
+          <td>{{ row["qid"] }}</td>
+          <td>{{ row["q_label"] }}</td>
+          <td>{{ row["alt_qid"] }}</td>
+          <td>{{ row["alt_q_label"] }}</td>
           <td>{{ row["pid"] }}</td>
           <td>{{ row["passage"] }}</td>
           <td>{{ row["citation"] }}</td>
