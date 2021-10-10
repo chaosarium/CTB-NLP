@@ -11,7 +11,7 @@ from log_file_helper import get_new_session_id, update_search_log, update_user_l
 
 INDEX = "ctb-nlp-v1" # index to search e.g. "msmacro-full"
 FIELDS = ["passage", "query", "alt_query"] # fields to search in elasticsearch retrieval e.g. ["passage", "query"]
-ES_CUTOFF = 10 # number of entries retrieved by elasticsearch for reranking
+ES_CUTOFF = 100 # number of entries retrieved by elasticsearch for reranking
 PORT = 6002
 
 app = Flask(__name__, static_url_path="")

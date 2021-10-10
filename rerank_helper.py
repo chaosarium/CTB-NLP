@@ -3,6 +3,12 @@ from pprint import pprint
 import torch
 from sentence_transformers import util
 
+# Define parameters for rerank algorithm
+QUERY_CHUNK_SIZE = 100
+CORPUS_CHUNK_SIZE = 500000
+TOP_K = 10
+SCORE_FUNCTION = util.dot_score # util.cos_sim or util.dot_score
+
 if torch.cuda.is_available():
     DEVICE = torch.device("cuda:0")  
     print("Running on the GPU")
@@ -27,7 +33,7 @@ def rerank(es_results):
     query_embeddings = query_embeddings.to(DEVICE)
     query_embeddings = util.normalize_embeddings(query_embeddings)
 
-    reranked_ranking = util.semantic_search(query_embeddings, sentence_embeddings, score_function=util.dot_score)
+    reranked_ranking = util.semantic_search(query_embeddings, sentence_embeddings, query_chunk_size = QUERY_CHUNK_SIZE, corpus_chunk_size = CORPUS_CHUNK_SIZE, top_k = TOP_K, score_function = SCORE_FUNCTION)
 
     reranked_table = []
     for index, entry_at_rank in enumerate(reranked_ranking[0]):
@@ -39,4 +45,5 @@ def rerank(es_results):
         reranked_table.append(entry)
     es_results.table = reranked_table
     
+    # return the reranked results
     return es_results
