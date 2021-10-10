@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+
+    <button onclick="search()">test search</button>
+    <button onclick="getQuery()">get query</button>
+
+    <form action="">
+        <input type="text" id="inputBox">
+    </form>
+    
+    <script src="https://cdn.jsdelivr.net/npm/node-fetch@3.0.0/src/index.min.js"></script>
+    <script>
+        async function search() {
+
+            const response = await fetch("http://strangepsychocat.tk:6002/search-api?queryInputBox=随便进儿子房间怎么了吗？&reqType=json");
+            const data = await response.json();
+
+            console.log(data);
+            
+        }
+    </script>
+
+    <script>
+        function getQuery() {
+            inputBox = document.getElementById('inputBox')
+            console.log(inputBox.value)
+        }
+    </script>
+
+</body>
+</html>
