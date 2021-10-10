@@ -1,6 +1,7 @@
 from flask import Flask
 from markupsafe import escape
 from flask import render_template
+from flask_cors import CORS, cross_origin
 from flask import request, jsonify
 import numpy
 import json
@@ -15,6 +16,9 @@ ES_CUTOFF = 2 # number of entries retrieved by elasticsearch for reranking
 PORT = 6002
 
 app = Flask(__name__, static_url_path="")
+cors = CORS(app)
+app.config['CORS_HEADERS'] = 'Content-Type'
+
 
 def handel_search(query):
     search_session_id = get_new_session_id()
