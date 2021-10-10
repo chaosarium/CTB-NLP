@@ -11,23 +11,13 @@ from log_file_helper import get_new_session_id, update_search_log, update_user_l
 
 INDEX = "ctb-nlp-v1" # index to search e.g. "msmacro-full"
 FIELDS = ["passage", "query", "alt_query"] # fields to search in elasticsearch retrieval e.g. ["passage", "query"]
-ES_CUTOFF = 100 # number of entries retrieved by elasticsearch for reranking
+ES_CUTOFF = 2 # number of entries retrieved by elasticsearch for reranking
 PORT = 6002
 
 app = Flask(__name__, static_url_path="")
 
-# Return index html
-@app.route("/")
-def return_index():
-    return render_template('index.html')
-
-# get query post printed
-@app.route('/search-req', methods=['POST'])
-def handel_search_req():
-    query_input = request.form["queryInputBox"]
-    request_type = request.form["reqType"]
+def handel_search(query_input):
     search_session_id = get_new_session_id()
-
     # do some retrieval and ranking here
     dummy_result = search_results_data(
         search_session_id = search_session_id,
@@ -53,10 +43,38 @@ def handel_search_req():
     print(f'> > > that took {toc - tic} seconds')
 
     update_search_log(model_results)
+
+    return model_results
+
+# Return index html
+@app.route("/")
+def return_index():
+    return render_template('index.html')
+
+# get query post printed
+@app.route('/search-req', methods=['POST', 'GET'])
+def handel_search_req():
+    query_input = request.form["queryInputBox"]
+    request_type = request.form["reqType"]
+
+    model_results = handel_search(query_input)
  
-    if request_type == "page":
-        return render_template('response.html', searchResult = model_results)
-    elif request_type == "json":
+    return render_template('response.html', searchResult = model_results)
+
+@app.route('/search-api', methods=['GET'])
+def api_handelling():
+    # check if things exist
+    print('api req received')
+    
+    try:
+        query_input = request.args['queryInputBox']
+        request_type = request.args['reqType']
+    except:
+        return "Error: request incomplete. plz include 'queryInputBox' and 'reqType' in req artument."
+
+    model_results = handel_search(query_input)
+
+    if request_type == "json":
         result_dic = {
                 'search_session_id': model_results.search_session_id,
                 'query_input': model_results.query_input, 
@@ -71,7 +89,8 @@ def handel_search_req():
 
         return jsong_response
     else:
-        return "err what are you doing this really shouldn't be returned"
+        return "err something is wrong. are you requesting for a json?"
+
 
 # logging user activity
 @app.route('/log-req', methods=['POST'])
