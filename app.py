@@ -16,25 +16,12 @@ PORT = 6002
 
 app = Flask(__name__, static_url_path="")
 
-def handel_search(query_input):
+def handel_search(query):
     search_session_id = get_new_session_id()
-    # do some retrieval and ranking here
-    dummy_result = search_results_data(
-        search_session_id = search_session_id,
-        query_input = query_input,
-        ranks = [1,2,3], 
-        qids = ["qid 1", "qid 2", "qid 3"],
-        q_labels = ["q_label 1", "q_label 2", "q_label 3"],
-        alt_qids = ["alt_qid 1", "alt_qid 2", "alt_qid 3"],
-        alt_q_labels = ["alt_q_label 1", "alt_q_label 2", "alt_q_label 3"],
-        pids = [15324, 124, 642], 
-        passages = ["名侦探柯南 国语版-动漫动画-全集高清正版视频在线观看-爱奇艺", "名侦探柯南国语版全集(国语) 名侦探柯南国语版动漫全集 在线观看 - 哈哈动漫网", "名侦探柯南(国语)-名侦探柯南(国语)全集(1-837共1000集)-动画片 - 搜狐视频"], 
-        citations = ["citation 1", "citation 2", "citation 3"], 
-        scores = [0.231, 0.123, 0.095]
-    )
-
-    result_count, es_hits = es_search(query_input, cutoff = ES_CUTOFF, index=INDEX, fields = FIELDS)
-    es_results = direct_es_search_result(search_session_id, query_input, es_hits)
+    
+    print(f'> > > es searching for ... {query}')
+    result_count, es_hits = es_search(query, cutoff = ES_CUTOFF, index=INDEX, fields = FIELDS)
+    es_results = direct_es_search_result(search_session_id, query, es_hits)
 
     print('> > > reranking...')
     tic = time.time()
