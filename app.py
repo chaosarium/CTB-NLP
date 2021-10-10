@@ -72,9 +72,9 @@ def api_handelling():
         def convert(o):
             if isinstance(o, numpy.int64): return int(o)  
             raise TypeError
-        jsong_response = json.dumps(result_dic, default=convert)
+        json_response = json.dumps(result_dic, default=convert)
 
-        return jsong_response
+        return json_response
     else:
         return "err something is wrong. are you requesting for a json?"
 
